@@ -6,6 +6,95 @@
     <title>TRUST ME | Sociální Síť Nové Generace</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.0/firebase-app.js";
+        import { getAnalytics, logEvent } from "https://www.gstatic.com/firebasejs/9.6.0/firebase-analytics.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.0/firebase-auth.js";
+        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.6.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCy-2sCWLloq4rnVrIekIwa3fyRlOK6fbo",
+            authDomain: "trustme-web-bcf3e.firebaseapp.com",
+            projectId: "trustme-web-bcf3e",
+            storageBucket: "trustme-web-bcf3e.appspot.com",
+            messagingSenderId: "144819033018",
+            appId: "1:144819033018:web:991824e8f3fd2e8bccc383",
+            measurementId: "G-8PFJGTC4L9",
+            databaseURL: "https://trustme-web-bcf3e-default-rtdb.firebaseio.com/"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const auth = getAuth();
+        const database = getDatabase(app);
+
+        // Track active users count
+        let activeUsers = 0;
+        const activeUsersRef = ref(database, 'activeUsers');
+        
+        onValue(activeUsersRef, (snapshot) => {
+            activeUsers = snapshot.val() || 0;
+            document.getElementById('activeUsersCount').textContent = activeUsers;
+        });
+
+        // Auth state listener
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('registerForm').style.display = 'none';
+                document.getElementById('userProfile').style.display = 'block';
+                document.getElementById('userEmail').textContent = user.email;
+            } else {
+                document.getElementById('loginForm').style.display = 'block';
+                document.getElementById('registerForm').style.display = 'none';
+                document.getElementById('userProfile').style.display = 'none';
+            }
+        });
+
+        // Register function
+        window.registerUser = function(e) {
+            e.preventDefault();
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            
+            createUserWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    alert('Registrace úspěšná! Nyní jste přihlášen.');
+                    logEvent(analytics, 'sign_up', { method: 'email' });
+                })
+                .catch((error) => {
+                    alert('Chyba při registraci: ' + error.message);
+                });
+        };
+
+        // Login function
+        window.loginUser = function(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            signInWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    logEvent(analytics, 'login', { method: 'email' });
+                })
+                .catch((error) => {
+                    alert('Chyba při přihlášení: ' + error.message);
+                });
+        };
+
+        // Logout function
+        window.logoutUser = function() {
+            auth.signOut();
+        };
+
+        // Beta access function
+        window.joinBeta = function() {
+            alert('Děkujeme za váš zájem! Až bude beta verze dostupná, dáme vám vědět na váš email.');
+            logEvent(analytics, 'beta_signup');
+        };
+    </script>
     <style>
         :root {
             --neon-blue: #0ff0fc;
@@ -68,37 +157,6 @@
         
         .cyber-glow-green {
             text-shadow: 0 0 5px var(--neon-green), 0 0 10px var(--neon-green);
-        }
-        
-        /* Cyber Alert */
-        .cyber-alert {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            width: 320px;
-            padding: 15px 20px;
-            background-color: rgba(15, 15, 35, 0.95);
-            border-left: 4px solid var(--alert-yellow);
-            box-shadow: 0 0 20px rgba(245, 211, 0, 0.6);
-            font-family: 'Orbitron', sans-serif;
-            font-weight: 500;
-            color: white;
-            transform: translateX(120%);
-            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-            z-index: 1000;
-            backdrop-filter: blur(5px);
-            border-radius: 0 4px 4px 0;
-        }
-        
-        .cyber-alert.show {
-            transform: translateX(0);
-        }
-        
-        .cyber-alert::before {
-            content: "⚠";
-            margin-right: 12px;
-            color: var(--alert-yellow);
-            font-size: 1.2rem;
         }
         
         /* Header */
@@ -330,6 +388,16 @@
             justify-content: center;
         }
         
+        /* Active users counter */
+        .active-users {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-family: 'Orbitron', sans-serif;
+            color: var(--neon-green);
+            font-size: 0.9rem;
+        }
+        
         /* Animated Tagline */
         .tagline {
             position: relative;
@@ -460,6 +528,112 @@
             background: linear-gradient(to bottom, rgba(7, 6, 17, 0.7), rgba(13, 12, 29, 0.5));
             border-top: 1px solid var(--cyber-border);
             border-bottom: 1px solid var(--cyber-border);
+        }
+        
+        /* Updates Section */
+        #updates {
+            background: linear-gradient(to bottom, rgba(13, 12, 29, 0.5), rgba(7, 6, 17, 0.7));
+        }
+        
+        .update-item {
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--cyber-border);
+        }
+        
+        .update-date {
+            color: var(--neon-green);
+            font-family: 'Orbitron', sans-serif;
+            margin-bottom: 0.5rem;
+        }
+        
+        /* FAQ Section */
+        #faq {
+            background: linear-gradient(to bottom, rgba(7, 6, 17, 0.7), rgba(13, 12, 29, 0.5));
+            border-top: 1px solid var(--cyber-border);
+        }
+        
+        .faq-item {
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--cyber-border);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .faq-question {
+            padding: 1.5rem;
+            background: var(--card-bg);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+        }
+        
+        .faq-question:hover {
+            background: rgba(30, 29, 50, 0.8);
+        }
+        
+        .faq-answer {
+            padding: 0 1.5rem;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            background: rgba(15, 14, 30, 0.6);
+        }
+        
+        .faq-item.active .faq-answer {
+            padding: 1.5rem;
+            max-height: 500px;
+        }
+        
+        /* Auth Forms */
+        .auth-form {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: var(--card-bg);
+            border: 1px solid var(--cyber-border);
+            border-radius: 8px;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem;
+            background: rgba(10, 9, 20, 0.7);
+            border: 1px solid var(--cyber-border);
+            color: var(--cyber-text);
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1rem;
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 2rem;
+        }
+        
+        .toggle-auth {
+            color: var(--neon-blue);
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        
+        .user-profile {
+            text-align: center;
+            padding: 2rem;
+            display: none;
         }
         
         /* CTA Section */
@@ -751,6 +925,11 @@
                 flex-direction: column;
                 gap: 1rem;
             }
+            
+            .form-actions {
+                flex-direction: column;
+                gap: 1rem;
+            }
         }
     </style>
 </head>
@@ -765,21 +944,15 @@
         <div class="cursor"></div>
     </div>
     
-    <!-- Cyber Alert -->
-    <div class="cyber-alert" id="cyberAlert">
-        Připoj se do exkluzivního beta testování Trust Me!
-    </div>
-    
     <!-- Header -->
     <header>
-        <a href="#" class="logo">TRUSTME</a>
+        <a href="#" class="logo">TRUSTME <span class="active-users">Online: <span id="activeUsersCount">0</span></span></a>
         <nav>
             <ul>
                 <li><a href="#features" class="cyber-glow">Funkce</a></li>
-                <li><a href="#roadmap" class="cyber-glow">Roadmap</a></li>
-                <li><a href="#about" class="cyber-glow">O Nás</a></li>
-                <li><a href="#contact" class="cyber-glow">Kontakt</a></li>
-                <li><a href="#" class="cyber-btn"><i class="fas fa-user-plus"></i> Registrace</a></li>
+                <li><a href="#updates" class="cyber-glow">Aktualizace</a></li>
+                <li><a href="#faq" class="cyber-glow">FAQ</a></li>
+                <li><a href="#register" class="cyber-btn"><i class="fas fa-user-plus"></i> Registrace</a></li>
             </ul>
         </nav>
     </header>
@@ -792,7 +965,7 @@
                 <p class="cyber-glow">Důvěra. Bezpečnost. Spojení.</p>
             </div>
             <div class="hero-buttons">
-                <a href="#" class="cyber-btn btn-pink"><i class="fas fa-rocket"></i> Beta Přístup</a>
+                <a href="#" class="cyber-btn btn-pink" onclick="joinBeta()"><i class="fas fa-rocket"></i> Beta Přístup</a>
                 <a href="#features" class="cyber-btn"><i class="fas fa-info-circle"></i> Více Informací</a>
             </div>
         </section>
@@ -804,47 +977,138 @@
                 <div class="cyber-card">
                     <div class="cyber-icon"><i class="fas fa-shield-alt"></i></div>
                     <h3>Pokročilé Zabezpečení</h3>
-                    <p>End-to-end šifrování všech zpráv a dat. Vaše soukromí je naší prioritou číslo jedna.</p>
+                    <p>End-to-end šifrování všech zpráv a dat. Vaše soukromí je naší prioritou číslo jedna. Všechna data jsou šifrována před opuštěním vašeho zařízení.</p>
+                    <a href="#faq" class="cyber-btn" style="margin-top: auto; width: fit-content;">Časté dotazy</a>
                 </div>
                 
                 <div class="cyber-card">
                     <div class="cyber-icon"><i class="fas fa-user-friends"></i></div>
                     <h3>Skutečná Komunita</h3>
-                    <p>Žádní boti, žádné falešné účty. Pouze ověření uživatelé s reálnými identitami.</p>
+                    <p>Žádní boti, žádné falešné účty. Pouze ověření uživatelé s reálnými identitami. Každý uživatel prochází ověřovacím procesem.</p>
+                    <a href="#register" class="cyber-btn" style="margin-top: auto; width: fit-content;">Připojit se</a>
                 </div>
                 
                 <div class="cyber-card">
                     <div class="cyber-icon"><i class="fas fa-bolt"></i></div>
                     <h3>Rychlost</h3>
-                    <p>Decentralizovaná architektura zajišťuje bleskově rychlé načítání a odezvu.</p>
+                    <p>Decentralizovaná architektura zajišťuje bleskově rychlé načítání a odezvu. Žádné čekání na načtení obsahu.</p>
+                    <a href="#updates" class="cyber-btn" style="margin-top: auto; width: fit-content;">Aktuální stav</a>
                 </div>
             </div>
         </section>
         
-        <!-- Roadmap Section -->
-        <section class="section" id="roadmap" style="background: rgba(7, 6, 17, 0.6);">
-            <h2 class="section-title cyber-glow">Naše Roadmap</h2>
-            <div class="cyber-grid">
-                <div class="cyber-card">
-                    <div class="cyber-icon">2025/6</div>
-                    <h3>Omezená Beta Verze</h3>
-                    <p>První verze s základními funkcemi: zprávy, přátelé, profil a nastavení. Dostupné pouze pro 20 vybraných testerů.</p>
-                    <a href="#" class="cyber-btn" style="margin-top: auto; width: fit-content;">Více info</a>
+        <!-- Updates Section -->
+        <section class="section" id="updates">
+            <h2 class="section-title cyber-glow">Aktualizace</h2>
+            <div style="max-width: 800px; margin: 0 auto;">
+                <div class="update-item">
+                    <div class="update-date">14.5. 2025</div>
+                    <h3>Spuštění vývojářské verze</h3>
+                    <p>První interní verze TrustMe byla dokončena a testována v uzavřené skupině vývojářů. Základní funkce jako zprávy a profily fungují podle očekávání.</p>
                 </div>
-                
-                <div class="cyber-card">
-                    <div class="cyber-icon">2025/9</div>
-                    <h3>Veřejná Beta</h3>
-                    <p>Rozšíření funkcí a kapacity pro 1000 uživatelů. Přidání skupin a komunit.</p>
-                    <a href="#" class="cyber-btn" style="margin-top: auto; width: fit-content;">Více info</a>
+                <div class="update-item">
+                    <div class="update-date">......</div>
+                    <h3>........</h3>
+                    <p>...</p>
                 </div>
-                
-                <div class="cyber-card">
-                    <div class="cyber-icon">2026/Q1</div>
-                    <h3>Verze 1.0</h3>
-                    <p>Plně funkční platforma s veškerými plánovanými funkcemi a mobilními aplikacemi.</p>
-                    <a href="#" class="cyber-btn" style="margin-top: auto; width: fit-content;">Více info</a>
+                <div class="update-item">
+                    <div class="update-date">......</div>
+                    <h3>.......</h3>
+                    <p>........</p>
                 </div>
+            </div>
+        </section>
+        
+        <!-- FAQ Section -->
+        <section class="section" id="faq">
+            <h2 class="section-title cyber-glow-pink">Časté dotazy</h2>
+            <div style="max-width: 800px; margin: 0 auto;">
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>Jak se mohu zaregistrovat do beta testování?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Beta testování bude spuštěno v září 2025. Můžete se přihlásit k odběru novinek nebo kliknout na tlačítko "Beta Přístup" v hlavní sekci, abyste dostali upozornění, až bude registrace otevřena.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>Jaké jsou požadavky na zařízení?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>TrustMe bude fungovat na všech moderních prohlížečích (Chrome, Firefox, Safari, Edge) a brzy také jako mobilní aplikace pro iOS a Android. Pro nejlepší zážitek doporučujeme používat nejnovější verzi vašeho prohlížeče.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>Jak funguje ověřování uživatelů?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Každý uživatel musí projít ověřovacím procesem, který zahrnuje potvrzení e-mailu a telefonního čísla. V budoucnu plánujeme implementovat i další metody ověření identity.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>Budou na platformě reklamy?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>TrustMe nebude obsahovat žádné tradiční reklamy. Uvažujeme o prémiovém modelu s dobrovolnými příspěvky od komunity, abychom zajistili udržitelnost bez kompromisů v soukromí uživatelů.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Registration Section -->
+        <section class="section" id="register">
+            <h2 class="section-title cyber-glow">Registrace & Přihlášení</h2>
+            
+            <!-- Login Form -->
+            <div class="auth-form" id="loginForm">
+                <h3><i class="fas fa-sign-in-alt"></i> Přihlášení</h3>
+                <form onsubmit="loginUser(event)">
+                    <div class="form-group">
+                        <label for="loginEmail">Email</label>
+                        <input type="email" id="loginEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Heslo</label>
+                        <input type="password" id="loginPassword" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="cyber-btn"><i class="fas fa-unlock"></i> Přihlásit se</button>
+                        <span class="toggle-auth" onclick="showRegister()">Nemáte účet? Zaregistrujte se</span>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Register Form -->
+            <div class="auth-form" id="registerForm" style="display: none;">
+                <h3><i class="fas fa-user-plus"></i> Registrace</h3>
+                <form onsubmit="registerUser(event)">
+                    <div class="form-group">
+                        <label for="regEmail">Email</label>
+                        <input type="email" id="regEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="regPassword">Heslo</label>
+                        <input type="password" id="regPassword" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="cyber-btn btn-pink"><i class="fas fa-check"></i> Zaregistrovat se</button>
+                        <span class="toggle-auth" onclick="showLogin()">Již máte účet? Přihlaste se</span>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- User Profile -->
+            <div class="user-profile" id="userProfile">
+                <h3><i class="fas fa-user-circle"></i> Váš profil</h3>
+                <p>Jste přihlášen jako: <strong id="userEmail"></strong></p>
+                <button onclick="logoutUser()" class="cyber-btn" style="margin-top: 1.5rem;"><i class="fas fa-sign-out-alt"></i> Odhlásit se</button>
             </div>
         </section>
         
@@ -854,8 +1118,8 @@
                 <h2 class="cyber-glow">Připojte se k revoluci v sociálních sítích</h2>
                 <p style="font-size: 1.3rem; margin-bottom: 3rem;">Buďte mezi prvními, kdo zažijí novou éru online komunikace.</p>
                 <div style="display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap;">
-                    <a href="#" class="cyber-btn btn-green"><i class="fas fa-envelope"></i> Odebírat Novinky</a>
-                    <a href="#" class="cyber-btn"><i class="fas fa-question-circle"></i> Časté Otázky</a>
+                    <a href="#register" class="cyber-btn btn-green"><i class="fas fa-user-plus"></i> Vytvořit účet</a>
+                    <a href="#faq" class="cyber-btn"><i class="fas fa-question-circle"></i> Časté Otázky</a>
                 </div>
             </div>
         </section>
@@ -863,19 +1127,19 @@
     
     <!-- Footer -->
     <footer class="cyber-footer">
-        <div class="footer-logo">TRUSTME</div>
+        <div class="footer-logo">TRUSTME <span style="font-size: 0.6em;">Online: <span id="footerUsersCount">0</span></span></div>
         <div class="footer-links">
             <a href="#features">Funkce</a>
-            <a href="#roadmap">Roadmap</a>
-            <a href="#about">O Nás</a>
-            <a href="#contact">Kontakt</a>
+            <a href="#updates">Aktualizace</a>
+            <a href="#faq">FAQ</a>
+            <a href="#register">Registrace</a>
             <a href="#">Podmínky</a>
             <a href="#">Ochrana Soukromí</a>
         </div>
         <div class="social-links">
             <a href="#"><i class="fab fa-twitter"></i></a>
             <a href="#"><i class="fab fa-discord"></i></a>
-            <a href="#"><i class="fab fa-github"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
             <a href="#"><i class="fab fa-telegram"></i></a>
         </div>
         <div class="copyright">
@@ -885,18 +1149,40 @@
     </footer>
     
     <script>
-        // Show cyber alert after page load
-        document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(function() {
-                document.getElementById('cyberAlert').classList.add('show');
-                
-                // Hide after 5 seconds
-                setTimeout(function() {
-                    document.getElementById('cyberAlert').classList.remove('show');
-                }, 8000);
-            }, 1500);
+        // Show active users count in footer
+        setInterval(() => {
+            document.getElementById('footerUsersCount').textContent = 
+                document.getElementById('activeUsersCount').textContent;
+        }, 1000);
+
+        // Toggle FAQ items
+        function toggleFAQ(element) {
+            const item = element.parentElement;
+            item.classList.toggle('active');
             
-            // Animate tagline underline
+            // Close other open FAQs
+            document.querySelectorAll('.faq-item').forEach(faq => {
+                if (faq !== item && faq.classList.contains('active')) {
+                    faq.classList.remove('active');
+                }
+            });
+        }
+
+        // Toggle between login and register forms
+        function showRegister() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'block';
+            window.location.hash = '#register';
+        }
+
+        function showLogin() {
+            document.getElementById('registerForm').style.display = 'none';
+            document.getElementById('loginForm').style.display = 'block';
+            window.location.hash = '#register';
+        }
+
+        // Animate tagline underline
+        document.addEventListener('DOMContentLoaded', function() {
             setTimeout(function() {
                 document.querySelector('.tagline').classList.add('animate');
             }, 1000);
@@ -917,8 +1203,13 @@
                 }
             });
             
-            // Create particles
-            createParticles();
+            // Check hash on load
+            if (window.location.hash === '#register') {
+                const user = document.getElementById('userProfile').style.display;
+                if (user === 'none' || user === '') {
+                    showLogin();
+                }
+            }
         });
         
         // Terminal typing effect
@@ -966,39 +1257,6 @@
             }
             
             setTimeout(typeTerminal, 2000);
-        }
-        
-        // Create floating particles
-        function createParticles() {
-            const particlesContainer = document.getElementById('particles');
-            if(!particlesContainer) return;
-            
-            const particleCount = window.innerWidth < 768 ? 20 : 50;
-            
-            for(let i = 0; i < particleCount; i++) {
-                const particle = document.createElement('div');
-                particle.classList.add('particle');
-                
-                // Random size between 1px and 3px
-                const size = Math.random() * 2 + 1;
-                particle.style.width = `${size}px`;
-                particle.style.height = `${size}px`;
-                
-                // Random position
-                particle.style.left = `${Math.random() * 100}%`;
-                particle.style.top = `${Math.random() * 100}%`;
-                
-                // Random animation duration
-                const duration = Math.random() * 20 + 10;
-                particle.style.animation = `float ${duration}s linear infinite`;
-                particle.style.animationDelay = `${Math.random() * 5}s`;
-                
-                // Random color
-                const colors = ['var(--neon-blue)', 'var(--neon-pink)', 'var(--neon-purple)', 'var(--neon-green)'];
-                particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                
-                particlesContainer.appendChild(particle);
-            }
         }
         
         // Smooth scrolling for anchor links
