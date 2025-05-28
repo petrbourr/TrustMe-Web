@@ -89,10 +89,10 @@
             auth.signOut();
         };
 
-        // Beta access function
+        // Beta access function - UPDATED TO REDIRECT
         window.joinBeta = function() {
-            alert('Děkujeme za váš zájem! Až bude beta verze dostupná, dáme vám vědět na váš email.');
             logEvent(analytics, 'beta_signup');
+            window.location.href = 'https://trustmebeta.web.app/?fbclid=IwY2xjawKkDZhleHRuA2FlbQIxMABicmlkETBWbUo5aWhESlJVSEdSZWdaAR6Z74xrXMgJOVt3tCjOyL5tpXXVAjUeDh2-DrLq_2BesvgA9QAagxdyhdQDuQ_aem_R_gwF97E5u5GfmHOblJ7HA';
         };
     </script>
     <style>
@@ -965,7 +965,8 @@
                 <p class="cyber-glow">Důvěra. Bezpečnost. Spojení.</p>
             </div>
             <div class="hero-buttons">
-                <a href="#" class="cyber-btn btn-pink" onclick="joinBeta()"><i class="fas fa-rocket"></i> Beta Přístup</a>
+                <!-- UPDATED BUTTON: Now redirects to beta URL -->
+                <a href="javascript:void(0)" class="cyber-btn btn-pink" onclick="joinBeta()"><i class="fas fa-rocket"></i> Beta Přístup</a>
                 <a href="#features" class="cyber-btn"><i class="fas fa-info-circle"></i> Více Informací</a>
             </div>
         </section>
