@@ -1100,6 +1100,135 @@
             transform: none;
             box-shadow: none;
         }
+
+        /* Responsive Modal Styles */
+        @media (max-width: 768px) {
+            .modal-content {
+                margin: 0;
+                width: 100%;
+                height: 100%;
+                max-width: none;
+                border-radius: 0;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .modal-header {
+                padding: 1rem;
+                margin-bottom: 1rem;
+            }
+
+            .modal-title {
+                font-size: 1.5rem;
+            }
+
+            .modal-body {
+                flex: 1;
+                overflow-y: auto;
+                padding: 0 1rem;
+            }
+
+            .info-text {
+                font-size: 0.95rem;
+            }
+
+            .info-text h3 {
+                font-size: 1.3rem;
+            }
+
+            .trustcoin-buttons {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+                padding: 0.5rem;
+            }
+
+            .coming-soon-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+            }
+
+            .coming-soon-text {
+                padding: 1rem;
+            }
+
+            .coming-soon-text i {
+                font-size: 2.5rem;
+            }
+
+            .coming-soon-text h3 {
+                font-size: 1.5rem;
+            }
+
+            .coming-soon-text p {
+                font-size: 1rem;
+            }
+
+            .cyber-btn {
+                padding: 1rem;
+                font-size: 1rem;
+            }
+
+            .cyber-btn i {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* Additional Mobile Optimizations */
+        @media (max-width: 480px) {
+            .modal-content {
+                padding: 1rem;
+            }
+
+            .modal-header {
+                padding: 0.5rem;
+            }
+
+            .modal-title {
+                font-size: 1.3rem;
+            }
+
+            .close-modal {
+                font-size: 1.5rem;
+            }
+
+            .info-text {
+                font-size: 0.9rem;
+            }
+
+            .info-text h3 {
+                font-size: 1.2rem;
+            }
+
+            .trustcoin-buttons {
+                gap: 0.8rem;
+            }
+
+            .cyber-btn {
+                padding: 0.8rem;
+            }
+        }
+
+        /* Fix for iOS Safari */
+        @supports (-webkit-touch-callout: none) {
+            .modal {
+                position: fixed;
+                height: -webkit-fill-available;
+            }
+
+            .modal-content {
+                height: -webkit-fill-available;
+            }
+        }
+
+        /* Prevent body scroll when modal is open */
+        body.modal-open {
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+        }
     </style>
 </head>
 <body>
@@ -1533,15 +1662,15 @@
             });
         });
 
-        // Modal functionality
+        // Update modal open/close functions to handle body scroll
         function openModal() {
             document.getElementById('infoModal').style.display = 'block';
-            document.body.style.overflow = 'hidden';
+            document.body.classList.add('modal-open');
         }
 
         function closeModal() {
             document.getElementById('infoModal').style.display = 'none';
-            document.body.style.overflow = 'auto';
+            document.body.classList.remove('modal-open');
         }
 
         // Close modal when clicking outside
@@ -1556,21 +1685,23 @@
             }
         }
 
-        // Update the info link to open modal
-        document.querySelector('a[href="#info"]').onclick = function(e) {
-            e.preventDefault();
-            openModal();
-        }
+        // Handle escape key to close modals
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeModal();
+                closeTrustcoinModal();
+            }
+        });
 
         // TrustCoin Modal functionality
         function openTrustcoinModal() {
             document.getElementById('trustcoinModal').style.display = 'block';
-            document.body.style.overflow = 'hidden';
+            document.body.classList.add('modal-open');
         }
 
         function closeTrustcoinModal() {
             document.getElementById('trustcoinModal').style.display = 'none';
-            document.body.style.overflow = 'auto';
+            document.body.classList.remove('modal-open');
         }
 
         // Update the trustcoin link to open modal
