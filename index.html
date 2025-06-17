@@ -931,6 +931,175 @@
                 gap: 1rem;
             }
         }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            position: relative;
+            background: var(--card-bg);
+            margin: 5% auto;
+            padding: 2rem;
+            width: 90%;
+            max-width: 1000px;
+            border: 1px solid var(--cyber-border);
+            box-shadow: 0 0 20px var(--neon-blue);
+            animation: modalFadeIn 0.3s ease-out;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--cyber-border);
+        }
+
+        .modal-title {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--neon-blue);
+            font-size: 2rem;
+            text-shadow: 0 0 10px var(--neon-blue);
+        }
+
+        .close-modal {
+            color: var(--cyber-text);
+            font-size: 2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .close-modal:hover {
+            color: var(--neon-pink);
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .info-text {
+            color: var(--cyber-text);
+            line-height: 1.8;
+        }
+
+        .info-text h3 {
+            color: var(--neon-pink);
+            margin-bottom: 1rem;
+        }
+
+        .info-images {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .info-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border: 1px solid var(--cyber-border);
+            transition: all 0.3s;
+        }
+
+        .info-image:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px var(--neon-blue);
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .modal-body {
+                grid-template-columns: 1fr;
+            }
+            
+            .info-images {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .trustcoin-buttons {
+            position: relative;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            padding: 1rem;
+        }
+
+        .coming-soon-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(13, 12, 29, 0.95);
+            backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            border: 1px solid var(--neon-blue);
+            box-shadow: 0 0 20px var(--neon-blue);
+        }
+
+        .coming-soon-text {
+            text-align: center;
+            color: var(--cyber-text);
+            padding: 2rem;
+        }
+
+        .coming-soon-text i {
+            font-size: 3rem;
+            color: var(--neon-blue);
+            margin-bottom: 1rem;
+            animation: pulse 2s infinite;
+        }
+
+        .coming-soon-text h3 {
+            color: var(--neon-pink);
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .coming-soon-text p {
+            font-size: 1.2rem;
+            color: var(--cyber-text-dim);
+        }
+
+        .cyber-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .cyber-btn.disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
     </style>
 </head>
 <body>
@@ -952,6 +1121,8 @@
                 <li><a href="#features" class="cyber-glow">Funkce</a></li>
                 <li><a href="#updates" class="cyber-glow">Aktualizace</a></li>
                 <li><a href="#faq" class="cyber-glow">FAQ</a></li>
+                <li><a href="#info" class="cyber-glow">Informace</a></li>
+                <li><a href="#trustcoin" class="cyber-btn btn-green"><i class="fas fa-coins"></i> TrustCoin</a></li>
                 <li><a href="#register" class="cyber-btn"><i class="fas fa-user-plus"></i> Registrace</a></li>
             </ul>
         </nav>
@@ -1126,6 +1297,87 @@
         </section>
     </main>
     
+    <!-- Information Modal -->
+    <div id="infoModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">O TrustMe</h2>
+                <span class="close-modal" onclick="closeModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="info-text">
+                    <h3>Vize TrustMe</h3>
+                    <p>TrustMe je revoluční sociální síť, která klade důraz na bezpečnost, důvěru a skutečné lidské spojení. Naším cílem je vytvořit platformu, kde se uživatelé mohou cítit bezpečně a být sami sebou.</p>
+                    
+                    <h3>Klíčové Vlastnosti</h3>
+                    <ul>
+                        <li>TrustKey - pokročilý bezpečnostní systém</li>
+                        <li>Ověření uživatelů pro skutečnou komunitu</li>
+                        <li>Šifrovaná komunikace</li>
+                        <li>Průhledné podmínky použití</li>
+                    </ul>
+                    
+                    <h3>Budoucnost</h3>
+                    <p>Plánujeme rozšířit TrustMe na více platforem a přidat nové funkce, které posílí komunitu a zlepší uživatelský zážitek.</p>
+                </div>
+                <div class="info-images">
+                    <img src="https://via.placeholder.com/400x300/0d0c1d/0ff0fc?text=TrustMe+Security" alt="TrustMe Security" class="info-image">
+                    <img src="https://via.placeholder.com/400x300/0d0c1d/ff2a6d?text=TrustMe+Community" alt="TrustMe Community" class="info-image">
+                    <img src="https://via.placeholder.com/400x300/0d0c1d/00ff9d?text=TrustMe+Future" alt="TrustMe Future" class="info-image">
+                    <img src="https://via.placeholder.com/400x300/0d0c1d/d300c5?text=TrustMe+Vision" alt="TrustMe Vision" class="info-image">
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- TrustCoin Modal -->
+    <div id="trustcoinModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">TrustCoin</h2>
+                <span class="close-modal" onclick="closeTrustcoinModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="info-text">
+                    <h3>Co je TrustCoin?</h3>
+                    <p>TrustCoin je vlastní kryptoměna sociální sítě TrustMe, která umožňuje uživatelům získávat odměny za aktivitu a podporu komunity.</p>
+                    
+                    <h3>Výhody TrustCoin</h3>
+                    <ul>
+                        <li>Získávání odměn za aktivitu na platformě</li>
+                        <li>Možnost nákupu prémiových funkcí</li>
+                        <li>Podpora tvůrců obsahu</li>
+                        <li>Decentralizovaný systém odměn</li>
+                    </ul>
+                    
+                    <h3>Jak získat TrustCoin</h3>
+                    <p>TrustCoin můžete získat aktivním přispíváním do komunity, vytvářením kvalitního obsahu nebo přímým nákupem v rámci platformy.</p>
+                </div>
+                <div class="trustcoin-buttons">
+                    <div class="coming-soon-overlay">
+                        <div class="coming-soon-text">
+                            <i class="fas fa-clock"></i>
+                            <h3>Připravujeme</h3>
+                            <p>TrustCoin bude dostupný v pozdější verzi TrustMe</p>
+                        </div>
+                    </div>
+                    <button class="cyber-btn btn-green disabled">
+                        <i class="fas fa-wallet"></i> Moje Peněženka
+                    </button>
+                    <button class="cyber-btn btn-pink disabled">
+                        <i class="fas fa-exchange-alt"></i> Vyměnit
+                    </button>
+                    <button class="cyber-btn disabled">
+                        <i class="fas fa-gift"></i> Odměny
+                    </button>
+                    <button class="cyber-btn btn-green disabled">
+                        <i class="fas fa-store"></i> Obchod
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <!-- Footer -->
     <footer class="cyber-footer">
         <div class="footer-logo">TRUSTME <span style="font-size: 0.6em;">Online: <span id="footerUsersCount">0</span></span></div>
@@ -1280,6 +1532,52 @@
                 }
             });
         });
+
+        // Modal functionality
+        function openModal() {
+            document.getElementById('infoModal').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('infoModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const infoModal = document.getElementById('infoModal');
+            const trustcoinModal = document.getElementById('trustcoinModal');
+            if (event.target == infoModal) {
+                closeModal();
+            }
+            if (event.target == trustcoinModal) {
+                closeTrustcoinModal();
+            }
+        }
+
+        // Update the info link to open modal
+        document.querySelector('a[href="#info"]').onclick = function(e) {
+            e.preventDefault();
+            openModal();
+        }
+
+        // TrustCoin Modal functionality
+        function openTrustcoinModal() {
+            document.getElementById('trustcoinModal').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeTrustcoinModal() {
+            document.getElementById('trustcoinModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Update the trustcoin link to open modal
+        document.querySelector('a[href="#trustcoin"]').onclick = function(e) {
+            e.preventDefault();
+            openTrustcoinModal();
+        }
     </script>
 </body>
 </html>
